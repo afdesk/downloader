@@ -1,6 +1,6 @@
 name: 'downloader'
 repository: github.com/afdesk/downloader
-version: '0.0.2'
+version: '0.0.1'
 usage: download vulnerability databases
 description: |-
     simplify the downloading of vulnerability database and Java index database.
@@ -8,7 +8,7 @@ platforms:
     - selector:
           os: linux
           arch: amd64
-      uri: https://github.com/afdesk/downloader/releases/download/v0.0.2/downloader.tar.gz
+      uri: https://github.com/afdesk/downloader/releases/download/v0.0.1/downloader.tar.gz
       bin: ./downloader
     - selector: # dev
           os: darwin
