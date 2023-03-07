@@ -1,0 +1,42 @@
+name: Release
+
+on:
+    push:
+        branches: ['main']
+        paths:
+            - 'plugin.yaml'
+
+permissions:
+    contents: write
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 2
+
+            - name: Get version
+              id: version
+              run: |
+                  echo "version=$( \
+                  git diff HEAD^ HEAD -U0 --diff-filter=M -- plugin.yaml | \
+                  awk '/^\+\s*version:/ {print $2}' | \
+                  tr -d \' \
+                  )" >> $GITHUB_OUTPUT
+
+            - name: Compress
+              if: ${{ steps.version.outputs.version != '' }}
+              id: compress
+              run: tar -czvf downloader.tar.gz LICENSE downloader
+
+            - name: Release
+              if: ${{ steps.version.outputs.version != '' }}
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: downloader.tar.gz
+                  tag_name: v${{ steps.version.outputs.version }}
