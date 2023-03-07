@@ -1,6 +1,6 @@
 # downloader
 
-A Trivy plugin that download databases.
+A Trivy plugin for databases downloading.
 
 ## Install
 ```shell
