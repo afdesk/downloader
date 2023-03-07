@@ -23,10 +23,12 @@ function download() {
     if [ $# -eq 0 ]
     then
         echo "Downloading databases into the default trivy cache dir"
-        trivy image --download-db-only --download-java-db-only
+        trivy image --download-db-only
+        trivy image --download-java-db-only
     else
         echo "Downloading databases to a directory $1"
-        trivy --cache-dir $1 image --download-db-only --download-java-db-only
+        trivy --cache-dir $1 image --download-db-only
+        trivy --cache-dir $1 image --download-java-db-only
     fi
 }
 
