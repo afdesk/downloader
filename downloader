@@ -1,0 +1,37 @@
+#!/bin/bash
+
+function help() {
+  cat << EOS >&2
+Usage: trivy downloader [-h,--help] path
+    A Trivy plugin that download databases.
+
+Options:
+    -h, --help    Show usage.
+
+Examples:
+    # Donwload databases to a specific directory
+    trivy downloader ~/home/trivy-db
+
+    # Download databases into the default trivy cache dir
+    trivy downloader
+EOS
+  exit
+}
+
+function download() {
+
+    if [ $# -eq 0 ]
+    then
+        echo "Downloading databases into the default trivy cache dir"
+        trivy image --download-db-only --download-java-db-only
+    else
+        echo "Downloading databases to a directory $1"
+        trivy --cache-dir $1 image --download-db-only --download-java-db-only
+    fi
+}
+
+if [[ ($1 == "--help") || ($1 == "-h") ]]; then
+  help
+fi
+
+download "$@"
