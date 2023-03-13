@@ -29,6 +29,7 @@ function download() {
         echo "Downloading databases to a directory $1"
         trivy --cache-dir $1 image --download-db-only
         trivy --cache-dir $1 image --download-java-db-only
+        rm -rf $1/fanal
     fi
 }
 
