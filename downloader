@@ -1,12 +1,13 @@
 #!/bin/bash
 
 function help() {
-  cat << EOS >&2
-Usage: trivy downloader [-h,--help] path
+  cat <<EOS >&2
+Usage: trivy downloader [-h,--help] [-a,archive] path
     A Trivy plugin that download databases.
 
 Options:
-    -h, --help    Show usage.
+    -h, --help         Show usage.
+    -a, --archive      Compress databases.
 
 Examples:
     # Donwload databases to a specific directory
@@ -18,23 +19,68 @@ EOS
   exit
 }
 
+archive=false
+
+args=()
+
+for arg; do
+  case "$arg" in
+  --help)
+    args+=(-h)
+    ;;
+  --archive)
+    args+=(-a)
+    ;;
+  *)
+    args+=("$arg")
+    ;;
+  esac
+done
+
+set -- "${args[@]}"
+
+while getopts "ah" opt; do
+  case ${opt} in
+  h)
+    help
+    exit 0
+    ;;
+  a)
+    archive=true
+    ;;
+  *)
+    help
+    exit 1
+    ;;
+  esac
+done
+
+shift "$((OPTIND - 1))"
+
 function download() {
 
-    if [ $# -eq 0 ]
-    then
-        echo "Downloading databases into the default trivy cache dir"
-        trivy image --download-db-only
-        trivy image --download-java-db-only
-    else
-        echo "Downloading databases to a directory $1"
-        trivy --cache-dir $1 image --download-db-only
-        trivy --cache-dir $1 image --download-java-db-only
-        rm -rf $1/fanal
-    fi
-}
+  if [ $# -eq 0 ]; then
+    echo "Downloading databases into the default trivy cache dir"
+    trivy image --download-db-only
+    trivy image --download-java-db-only
+  else
+    TRIVY_TEMP_DIR=$(mktemp -d)
 
-if [[ ($1 == "--help") || ($1 == "-h") ]]; then
-  help
-fi
+    echo "Downloading databases to a directory $1"
+    trivy --cache-dir "$TRIVY_TEMP_DIR" image --download-db-only
+    trivy --cache-dir "$TRIVY_TEMP_DIR" image --download-java-db-only
+    mkdir -p "$1"
+
+    if [ $archive == "true" ]; then
+      tar -cf "$1"/db.tar.gz -C "$TRIVY_TEMP_DIR"/db metadata.json trivy.db
+      tar -cf "$1"/javadb.tar.gz -C "$TRIVY_TEMP_DIR"/java-db metadata.json trivy-java.db
+    else
+      mv "$TRIVY_TEMP_DIR"/* "$1"/
+      rm -rf "$1"/fanal
+    fi
+
+    rm -rf "$TRIVY_TEMP_DIR"
+  fi
+}
 
 download "$@"
