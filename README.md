@@ -11,11 +11,12 @@ trivy plugin install github.com/afdesk/downloader
 ```shell
 trivy downloader -h
 
-Usage: trivy downloader [-h,--help] path
+Usage: trivy downloader [-h,--help] [-a,archive] path
     A Trivy plugin that download databases.
 
 Options:
-    -h, --help    Show usage.
+    -h, --help         Show usage.
+    -a, --archive      Compress databases.
 
 Examples:
     # Donwload databases to a specific directory
