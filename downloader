@@ -72,8 +72,8 @@ function download() {
     mkdir -p "$1"
 
     if [ $archive == "true" ]; then
-      tar -cf "$1"/db.tar.gz -C "$TRIVY_TEMP_DIR"/db metadata.json trivy.db
-      tar -cf "$1"/javadb.tar.gz -C "$TRIVY_TEMP_DIR"/java-db metadata.json trivy-java.db
+      tar -czf "$1"/db.tar.gz -C "$TRIVY_TEMP_DIR"/db metadata.json trivy.db
+      tar -czf "$1"/javadb.tar.gz -C "$TRIVY_TEMP_DIR"/java-db metadata.json trivy-java.db
     else
       mv "$TRIVY_TEMP_DIR"/* "$1"/
       rm -rf "$1"/fanal
